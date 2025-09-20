@@ -3,85 +3,76 @@ import { clsx } from "clsx"
 import { languages } from "./languages"
 import { getFarewellText, getRandomWord } from "./utils"
 import Confetti from "react-confetti"
+import type {JSX} from "react"
+import type {Language} from "./languages"
 
-function LostAnimation({ count = 16 }) {
-    const crying = Array.from({ length: count }).map((_, i) => {
-        const left = Math.round(Math.random() * 100)
-        const delay = (Math.random() * 1.5).toFixed(2)
-        const duration = (3 + Math.random() * 3).toFixed(2)
-        const size = 12 + Math.round(Math.random() * 36)
-        return (
-            <span
-                key={i}
-                className="crying"
-                style={{
-                    left: `${left}%`,
-                    animationDelay: `${delay}s`,
-                    animationDuration: `${duration}s`,
-                    fontSize: `${size}px`
-                }}
-            >
-                😢
-            </span>
-        )
-    })
 
-    return <div className="crying-rain" aria-hidden="true">{crying}</div>
-}
 
-/**
- * Backlog:
- * 
- * ✅ Farewell messages in status section
- * ✅ Disable the keyboard when the game is over
- * ✅ Fix a11y issues
- * ✅ Choose a random word from a list of words
- * ✅ Make the New Game button reset the game
- * ✅ Reveal what the word was if the user loses the game
- * ✅ Confetti drop when the user wins
- * 
- * Challenge: 🎊🎊🎊🎊🎊
- */
-
-export default function AssemblyEndgame() {
+export default function AssemblyEndgame(): JSX.Element {
     // State values
-    const [currentWord, setCurrentWord] = useState(() => getRandomWord())
-    const [guessedLetters, setGuessedLetters] = useState([])
+    const [currentWord, setCurrentWord] = useState<string>(():string => getRandomWord())
+    const [guessedLetters, setGuessedLetters] = useState<string[]>([])
 
     // Derived values
-    const numGuessesLeft = languages.length - 1
-    const wrongGuessCount =
-        guessedLetters.filter(letter => !currentWord.includes(letter)).length
-    const isGameWon =
-        currentWord.split("").every(letter => guessedLetters.includes(letter))
-    const isGameLost = wrongGuessCount >= numGuessesLeft
-    const isGameOver = isGameWon || isGameLost
-    const lastGuessedLetter = guessedLetters[guessedLetters.length - 1]
-    const isLastGuessIncorrect = lastGuessedLetter && !currentWord.includes(lastGuessedLetter)
+    const numGuessesLeft: number = languages.length - 1
+    const wrongGuessCount: number =
+        guessedLetters.filter((letter: string): boolean => !currentWord.includes(letter)).length
+    const isGameWon: boolean =
+        currentWord.split("").every((letter: string): boolean => guessedLetters.includes(letter))
+    const isGameLost: boolean = wrongGuessCount >= numGuessesLeft
+    const isGameOver: boolean = isGameWon || isGameLost
+    const lastGuessedLetter: string = guessedLetters[guessedLetters.length - 1]
+    const isLastGuessIncorrect: boolean | "" = lastGuessedLetter && !currentWord.includes(lastGuessedLetter)
 
     // Static values
     const alphabet = "abcdefghijklmnopqrstuvwxyz"
 
-    function addGuessedLetter(letter) {
-        setGuessedLetters(prevLetters =>
+    function addGuessedLetter(letter: string): void {
+        setGuessedLetters( prevLetters =>
             prevLetters.includes(letter) ?
                 prevLetters :
                 [...prevLetters, letter]
         )
     }
 
-    function startNewGame() {
+    function startNewGame(): void {
         setCurrentWord(getRandomWord())
         setGuessedLetters([])
     }
 
-    const languageElements = languages.map((lang, index) => {
-        const isLanguageLost = index < wrongGuessCount
-        const styles = {
+    function LostAnimation({ count = 16 }: {count: number}): JSX.Element {
+        const crying: JSX.Element[] = Array.from({ length: count }).map((_, i) => {
+            const left: number = Math.round(Math.random() * 100)
+            const delay: string = (Math.random() * 1.5).toFixed(2)
+            const duration: string = (3 + Math.random() * 3).toFixed(2)
+            const size: number = 12 + Math.round(Math.random() * 36)
+            return (
+                <span
+                    key={i}
+                    className="crying"
+                    style={{
+                        left: `${left}%`,
+                        animationDelay: `${delay}s`,
+                        animationDuration: `${duration}s`,
+                        fontSize: `${size}px`
+                    }}
+                >
+                    😢
+                </span>
+            )
+        })
+
+        return <div className="crying-rain" aria-hidden="true">{crying}</div>
+    }
+
+
+    const languageElements: JSX.Element[] = languages.map((lang:Language, index:number):JSX.Element => {
+        const isLanguageLost: boolean = index < wrongGuessCount
+        const styles:Omit<Language, "name"> = {
             backgroundColor: lang.backgroundColor,
             color: lang.color
         }
-        const className = clsx("chip", isLanguageLost && "lost")
+        const className: string = clsx("chip", isLanguageLost && "lost")
         return (
             <span
                 className={className}
@@ -93,9 +84,9 @@ export default function AssemblyEndgame() {
         )
     })
 
-    const letterElements = currentWord.split("").map((letter, index) => {
-        const shouldRevealLetter = isGameLost || guessedLetters.includes(letter)
-        const letterClassName = clsx(
+    const letterElements:JSX.Element[] = currentWord.split("").map((letter: string, index: number): JSX.Element => {
+        const shouldRevealLetter: boolean = isGameLost || guessedLetters.includes(letter)
+        const letterClassName: string = clsx(
             isGameLost && !guessedLetters.includes(letter) && "missed-letter"
         )
         return (
@@ -105,11 +96,11 @@ export default function AssemblyEndgame() {
         )
     })
 
-    const keyboardElements = alphabet.split("").map(letter => {
-        const isGuessed = guessedLetters.includes(letter)
-        const isCorrect = isGuessed && currentWord.includes(letter)
-        const isWrong = isGuessed && !currentWord.includes(letter)
-        const className = clsx({
+    const keyboardElements:JSX.Element[] = alphabet.split("").map((letter:string):JSX.Element => {
+        const isGuessed: boolean = guessedLetters.includes(letter)
+        const isCorrect: boolean = isGuessed && currentWord.includes(letter)
+        const isWrong: boolean = isGuessed && !currentWord.includes(letter)
+        const className: string = clsx({
             correct: isCorrect,
             wrong: isWrong
         })
@@ -128,13 +119,13 @@ export default function AssemblyEndgame() {
         )
     })
 
-    const gameStatusClass = clsx("game-status", {
+    const gameStatusClass: string = clsx("game-status", {
         won: isGameWon,
         lost: isGameLost,
         farewell: !isGameOver && isLastGuessIncorrect
     })
 
-    function renderGameStatus() {
+    function renderGameStatus(): JSX.Element | null {
         if (!isGameOver && isLastGuessIncorrect) {
             return (
                 <p className="farewell-message">
@@ -172,7 +163,7 @@ export default function AssemblyEndgame() {
                         numberOfPieces={1000}
                     />
             }
-            {isGameLost && <LostAnimation />}
+            {isGameLost && LostAnimation({count:24})}
             <header>
                 <h1>Assembly: Endgame</h1>
                 <p>Guess the word within 8 attempts to keep the
@@ -208,7 +199,7 @@ export default function AssemblyEndgame() {
                     }
                     You have {numGuessesLeft} attempts left.
                 </p>
-                <p>Current word: {currentWord.split("").map(letter =>
+                <p>Current word: {currentWord.split("").map((letter:string):string =>
                     guessedLetters.includes(letter) ? letter + "." : "blank.")
                     .join(" ")}</p>
 
