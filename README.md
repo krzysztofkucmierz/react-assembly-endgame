@@ -1,4 +1,13 @@
-# Getting Started
+# Assembly Endgame
+
+This is a variation of classic "hangman" game writeen in TypeScript + React. 
+
+You can [play it online](https://jade-sable-23f2f5.netlify.app/)
+(hosted on Netlify)
+
+![Screenshot](./screenshot.png) 
+
+## Getting Started
 Install the dependencies and run the project
 ```
 npm install
@@ -6,6 +15,7 @@ npm start
 ```
 
 Head over to https://vitejs.dev/ to learn more about configuring vite
+
 ## About Scrimba
 
 At Scrimba our goal is to create the best possible coding school at the cost of a gym membership! 💜
